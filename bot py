@@ -1,74 +1,113 @@
+
 import discord
 from discord.ext import commands
 import random
-
-description = '''An example bot to showcase the discord.ext.commands extension
-module.
-
-There are a number of utility commands being showcased here.'''
+import time
 
 intents = discord.Intents.default()
-intents.members = True
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='?', description=description, intents=intents)
+bot = commands.Bot(command_prefix='$', intents=intents, help_command=None)
 
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
-    print('------')
+    print(f'Fizemos login como {bot.user}')
 
 
+# 1. Hello
 @bot.command()
-async def add(ctx, left: int, right: int):
-    """Adds two numbers together."""
-    await ctx.send(left + right)
+async def hello(ctx):
+    await ctx.send("Hello! 👋")
 
 
+# 2. Bye
 @bot.command()
-async def roll(ctx, dice: str):
-    """Rolls a dice in NdN format."""
-    try:
-        rolls, limit = map(int, dice.split('d'))
-    except Exception:
-        await ctx.send('Format has to be in NdN!')
-        return
-
-    result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
-    await ctx.send(result)
+async def bye(ctx):
+    await ctx.send("🙂 Até mais!")
 
 
-@bot.command(description='For when you wanna settle the score some other way')
-async def choose(ctx, *choices: str):
-    """Chooses between multiple choices."""
-    await ctx.send(random.choice(choices))
-
-
+# 3. Cara ou coroa
 @bot.command()
-async def repeat(ctx, times: int, content='repeating...'):
-    """Repeats a message multiple times."""
-    for i in range(times):
-        await ctx.send(content)
+async def moeda(ctx):
+    resultado = random.choice(["Cara 🪙", "Coroa 🪙"])
+    await ctx.send(f"A moeda caiu em: **{resultado}**")
 
 
+# 4. Ajuda: lista todos os comandos
+@bot.command(name="help")
+async def ajuda(ctx):
+    comandos = """
+**📚 Lista de comandos do bot**
+
+👋 `$hello` - Envia uma saudação
+🙂 `$bye` - Despede-se
+🪙 `$moeda` - Joga cara ou coroa
+🎲 `$dado` - Lança um dado de 6 lados
+🔢 `$numero` - Sorteia um número de 1 a 100
+😂 `$piada` - Conta uma piada
+❤️ `$abraco` - Envia um abraço
+🕒 `$hora` - Mostra a hora atual
+🔮 `$bola` - Responde como uma bola mágica
+🧮 `$somar 5 3` - Soma dois números
+"""
+    await ctx.send(comandos)
+
+
+# 5. Dado
 @bot.command()
-async def joined(ctx, member: discord.Member):
-    """Says when a member joined."""
-    await ctx.send(f'{member.name} joined {discord.utils.format_dt(member.joined_at)}')
+async def dado(ctx):
+    await ctx.send(f"🎲 Você tirou {random.randint(1, 6)}!")
 
 
-@bot.group()
-async def cool(ctx):
-    """Says if a user is cool.
-
-    In reality this just checks if a subcommand is being invoked.
-    """
-    if ctx.invoked_subcommand is None:
-        await ctx.send(f'No, {ctx.subcommand_passed} is not cool')
+# 6. Número aleatório
+@bot.command()
+async def numero(ctx):
+    await ctx.send(f"🔢 Número sorteado: {random.randint(1, 100)}")
 
 
-@cool.command(name='bot')
-async def _bot(ctx):
-    """Is the bot cool?"""
-    await ctx.send('Yes, the bot is cool.')
+# 7. Piada
+@bot.command()
+async def piada(ctx):
+    piadas = [
+        "Por que o livro foi ao médico? Porque estava com muitas páginas em branco! 😂",
+        "O que o zero disse para o oito? Que cinto bonito! 😂",
+        "Por que o computador foi ao médico? Porque pegou um vírus! 💻"
+    ]
+    await ctx.send(random.choice(piadas))
+
+
+# 8. Abraço
+@bot.command()
+async def abraco(ctx):
+    await ctx.send(f"🤗 {ctx.author.mention} mandou um abraço para todo mundo!")
+
+
+# 9. Hora atual
+@bot.command()
+async def hora(ctx):
+    await ctx.send(f"🕒 Horário do computador: {time.strftime('%H:%M:%S')}")
+
+
+# 10. Bola mágica
+@bot.command()
+async def bola(ctx):
+    respostas = [
+        "🔮 Sim, com certeza!",
+        "🔮 Acho que sim!",
+        "🔮 Talvez...",
+        "🔮 Melhor não contar com isso.",
+        "🔮 Não parece provável!",
+        "🔮 Pergunte novamente mais tarde!"
+    ]
+    await ctx.send(random.choice(respostas))
+
+
+# 11. Somar dois números
+@bot.command()
+async def somar(ctx, numero1: float, numero2: float):
+    resultado = numero1 + numero2
+    await ctx.send(f"🧮 Resultado: {resultado:g}")
+
+
+bot.run("SEU TOKEN DO BOT DEVE FICAR AQUI!")
